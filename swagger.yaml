@@ -1,0 +1,819 @@
+openapi: 3.0.0
+info:
+  title: WheelD
+  description: 
+  version: 1.0.0
+
+servers:
+  - url: http://127.0.0.1:4000/
+    description: WheelD development server
+
+paths:
+  /phone_area_codes/getAll:
+    get:
+      tags:
+        - PhoneAreaCodes
+      summary: Get a list of all phone area codes
+      description: listing all phone area codes available in database.
+      operationId: getAllPhoneAreaCodes
+      responses:
+        "200":
+          description: An array of all accounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    status:
+                      type: number
+                      example: 200
+                    items:
+                      type: array
+                      items:
+                        type : object
+                        properties:
+                          id:
+                            type: number
+                            example: 1
+                          area_code_id:
+                            type: string
+                            example: "AR_01"
+                          area_code:
+                            type: string
+                            example: "362001"
+        "404":
+          description: No Record Found
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      status:
+                        type: number
+                        example: 404
+                      message:
+                        type: string
+                        example: "No Record Found"  
+  /users/authenticate:
+    post:
+      tags:
+        - Users
+      summary: Authenticate users credentials and return a JWT token and a cookie with a refresh token
+      description: Users must be verified before authenticating.
+      operationId: authenticate
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userName:
+                    type: string
+                    example: "PRA002"
+                  password:
+                    type: string
+                    example: "pass123"
+                required:
+                  - userName
+                  - password
+      responses:
+          "200":
+            description: Account details, a JWT access token and a refresh token cookie
+            headers:
+              Set-Cookie:
+                description: "`refreshToken`"
+                schema:
+                  type: string
+                  example: refreshToken=51872eca5efedcf424db4cf5afd16a9d00ad25b743a034c9c221afc85d18dcd5e4ad6e3f08607550; Path=/; Expires=Tue, 16 Jun 2020 09:14:17 GMT; HttpOnly
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: "5eb12e197e06a76ccdefc121"
+                    title:
+                      type: string
+                      example: "Mr"
+                    firstName:
+                      type: string
+                      example: "Pratik"
+                    lastName:
+                      type: string
+                      example: "Vachhani"
+                    userName:
+                      type: string
+                      example: "PRA002"
+                    countryCode:
+                      type: string
+                      example: "+91"
+                    phoneNumber:
+                      type: string
+                      example: "6353047076"
+                    zipCode:
+                      type: string
+                      example: "380001"
+                    role:
+                      type: string
+                      example: "User"
+                    created:
+                      type: string
+                      example: "2020-05-05T09:12:57.848Z"
+                    isVerified:
+                      type: boolean
+                      example: true
+                    jwtToken:
+                      type: string
+                      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZWIxMmUxOTdlMDZhNzZjY2RlZmMxMjEiLCJpZCI6IjVlYjEyZTE5N2UwNmE3NmNjZGVmYzEyMSIsImlhdCI6MTU4ODc1ODE1N30.xR9H0STbFOpSkuGA9jHNZOJ6eS7umHHqKRhI807YT1Y"
+          "412":
+            description: The email or password is incorrect
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: number
+                      example: 200
+                    message:
+                      type: string
+                      example: "Email or password is incorrect"  
+  /users/check_username:
+    post:
+      tags:
+        - Users
+      summary: Check that username is exist or not
+      description: this api gives a result for given username is valid or not
+      operationId: check_username
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userName:
+                    type: string
+                    example: "PRA002"
+                required:
+                  - userName
+      responses:
+        "200":
+          description: Username is valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: "Username is valid"
+        "412":
+            description: Username is not valid
+            content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        status:
+                          type: number
+                          example: 412
+                        message:
+                          type: string
+                          example: "Username is not valid"
+  /users/register:
+    post:
+      tags:
+        - Users
+      summary: Register a new users(driver) account and send a otp
+      description: user registration api.
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Mr"
+                first_name:
+                  type: string
+                  example: "Darpan"
+                last_name:
+                  type: string
+                  example: "Jotangiya"
+                userName:
+                  type: string
+                  example: "DAR007"
+                country_code:
+                  type: string
+                  example: "+91"
+                state_code:
+                  type: string
+                  example: "ST01"
+                ph_numb:
+                  type: string
+                  example: "6353047076"
+                zipCode:
+                  type: string
+                  example: "380001"
+                password:
+                  type: string
+                  example: "123456"
+                terms_conditions_viewed:
+                  type: string
+                  example: "Y"
+                terms_conditions_accepted:
+                  type: string
+                  example: "Y"
+                trailer_type_2yrs:
+                  type: string
+                  example: "TR_01"
+                us_work_6mth_auth:
+                  type: string
+                  example: "Y"
+                cdl_type:
+                  type: string
+                  example: "CDL01"
+                cdl_experience:
+                  type: string
+                  example: "2 Years"
+                cdl_state:
+                  type: string
+                  example: "GJ"
+                cdl_doc_uploaded:
+                  type: string
+                  example: "Y"
+                cdl_doc_id:
+                  type: number
+                  example: 3
+                referral_code:
+                  type: string
+                  example: "ABC456"
+                currently_employed:
+                  type: string
+                  example: "Y"
+                cdl_exp_date:
+                  type: string
+                  example: "2022-02-15"
+              required:
+                - title
+                - first_name
+                - last_name
+                - userName
+                - country_code
+                - state_code
+                - ph_numb
+                - zipCode
+                - password
+                - email
+                - acceptTerms
+                - us_work_6mth_auth
+                - cdl_type
+                - cdl_experience
+                - cdl_state
+                - cdl_doc_uploaded
+                - cdl_doc_id
+                - currently_employed
+                - terms_conditions_viewed
+                - trailer_type_2yrs
+                - cdl_exp_date
+      responses:
+        "200":
+          description: The registration request was successful and a verification email has been sent to the specified email address
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: number
+                    example: 5
+                  message:
+                    type: string
+                    example: "Registration successful, please check your email for verification instructions"
+          "412":
+            description: Something went wrong
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: number
+                      example: 412
+                    message:
+                      type: string
+                      example: "something went wrong"
+          "500":
+            description: Internal Server Error
+            content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "notNull Violation"
+  /drivers_employers_workedAt/register_step3_for_driver:
+    post:
+      tags:
+        - Users
+      summary: Register a new users(driver step3) account and send a otp
+      description: user registration api.
+      operationId: driver_register_step3
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                  example: 3
+                employer_Name:
+                  type: string
+                  example: "MRF"
+                employer_streetaddress:
+                  type: string
+                  example: "Anand Nagar Street, Near Mahadev Temple"
+                employer_city:
+                  type: string
+                  example: "Surat"
+                employer_state:
+                  type: string
+                  example: "Gujarat"
+                current_Employer:
+                  type: enum
+                  example: "Y"
+                employer_Zipcode:
+                  type: string
+                  example: "36200"
+                employer_Orgcode:
+                  type: string
+                  example: "ORG22"
+                date_Joined:
+                  type: date
+                  example: "2022-02-15"
+              required:
+                - employer_Name
+                - current_Employer
+                - employer_Zipcode
+                - employer_Orgcode
+                - date_Joined
+      responses:
+        "200":
+          description: The registration request was successful and a verification email has been sent to the specified email address
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: number
+                    example: 5
+                  message:
+                    type: string
+                    example: "Registration successful, please check your email for verification instructions"
+          "412":
+            description: Something went wrong
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: number
+                      example: 412
+                    message:
+                      type: string
+                      example: "something went wrong"
+          "500":
+            description: Internal Server Error
+            content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "notNull Violation"
+  /trailer_type/getAll:
+    get:
+      tags:
+        - Trailer Type
+      summary: Get a list of all trailer type
+      description: listing all trailer type.
+      operationId: gettrailerType
+      responses:
+        "200":
+          description: An array of all trailer type
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    status:
+                      type: number
+                      example: 200
+                    items:
+                      type: array
+                      items:
+                        type : object
+                        properties:
+                          id:
+                            type: number
+                            example: 1
+                          trailer_code_id:
+                            type: string
+                            example: "TR_01"
+                          trailer_type:
+                            type: string
+                            example: "Van"
+        "404":
+          description: No Record Found
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      status:
+                        type: number
+                        example: 404
+                      message:
+                        type: string
+                        example: "No Record Found"
+  /cdl_type/getAll:
+    get:
+      tags:
+        - CDL  Type
+      summary: Get a list of all cdl type
+      description: listing all cdl type.
+      operationId: getcdlType
+      responses:
+        "200":
+          description: An array of all cdl type
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    status:
+                      type: number
+                      example: 200
+                    items:
+                      type: array
+                      items:
+                        type : object
+                        properties:
+                          id:
+                            type: number
+                            example: 1
+                          cld_code_id:
+                            type: string
+                            example: "cd_01"
+                          cdl_type:
+                            type: string
+                            example: "cld1"
+        "404":
+          description: No Record Found
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      status:
+                        type: number
+                        example: 404
+                      message:
+                        type: string
+                        example: "No Record Found"                                           
+  /users/get_terms_condition:
+    get:
+      tags:
+        - Term & Condition
+      summary: Get html content for term condition
+      description: get html content 
+      operationId: termcondition
+      responses:
+        "200":
+          description: return and object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 200
+                  content:
+                    type: string
+                    example: html content display here
+                  message:
+                    type: string
+                    example: content get successfully 
+        "404":
+          description: No Content Found
+          content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: number
+                      example: 404
+                    message:
+                      type: string
+                      example: no content found
+  /users/reset-password:
+    post:
+      tags:
+        - Users
+      summary: Pasword Reset
+      operationId: reset password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  example: "asdasfasdfasdfdffasfdsavfdg232dcdv3sdf"
+                password:
+                  type: string
+                  example: "12345"
+                confirmPassword:
+                  type: string
+                  example: "12345"  
+              required:
+                - new_password
+                - conf_password
+      responses:
+        "200":
+          description: Password change successully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "password change successfully"
+        "400":
+          description: Password not match
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "something went wrong"
+  /message/send_message:
+    post:
+      tags:
+        - Feedback/Help
+      summary: Sends feedback message or help message
+      operationId: feedback message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: "feedback"
+                name:
+                  type: string
+                  example: "Mark Armstrong"
+                email:
+                  type: string
+                  example: "test@gmail.com"
+                issue:
+                  type: string
+                  example: "i am facing some issue please help me"  
+              required:
+                - type
+                - name
+                - email
+                - issue
+      responses:
+        "200":
+          description: Issue sends successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: "Issue sends successfully"
+        "412":
+          description: Something went wrong
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 412
+                  message:
+                    type: string
+                    example: "something went wrong"
+  /otp_codes/send_otp:
+    post:
+      tags:
+        - OTPs
+      summary: send an otp by username
+      description: send otp by username
+      operationId: send_otp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userName:
+                  type: string
+                  example: "DAR010"
+                type:
+                  type: string
+                  example: "forgot"
+              required:
+                - userName
+                - type
+      responses:
+        "200":
+          description: The otp has been sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 200
+                  token:
+                    type: string
+                    example: "859d50d9fcac1a8c537232e5ab60c3375e03651f9686a828a908165701eada69fae4d36f0e301741"
+                  OTP:
+                    type: number
+                    example: 123456
+                  message:
+                    type: string
+                    example: "OTP has been successfully sent to registered mobile number"
+          "412":
+            description: Something went wrong
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: number
+                      example: 412
+                    message:
+                      type: string
+                      example: "something went wrong"
+          "500":
+            description: Internal Server Error
+            content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "notNull Violation"
+  /otp_codes/verify_otp:
+    post:
+      tags:
+        - OTPs
+      summary: verify an otp by token
+      description: verify an otp by token
+      operationId: verify_otp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  example: "asdasfasdfasdfdffasfdsavfdg232dcdv3sdf"
+              required:
+                - token
+      responses:
+        "200":
+          description: The otp has been sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 200
+                  token:
+                    type: string
+                    example: "afasfdsafdasdfas212dsfds2er4f"
+                  message:
+                    type: string
+                    example: "user verified successfully"
+          "412":
+            description: Token not exist
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: number
+                      example: 412
+                    message:
+                      type: string
+                      example: "token not exist"
+          "500":
+            description: Internal Server Error
+            content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "notNull Violation"
+
+omponents:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid, or the user does not have access to perform the action
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Unauthorized"
+    NotFoundError:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Not Found"
